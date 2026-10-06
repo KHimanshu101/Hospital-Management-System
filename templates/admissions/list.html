@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Inpatient Admissions - CarePoint HMS{% endblock %}
+{% block page_title %}Inpatient Care & Ward Admissions{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold text-teal m-0">Inpatient Admissions</h4>
+    <p class="text-muted small m-0">Track active bed allocations, attending physicians, and patient discharges.</p>
+  </div>
+  <a href="{{ url_for('admissions.new_admission') }}" class="btn btn-teal shadow-sm"><i class="fa-solid fa-bed me-1"></i> Admit New Inpatient</a>
+</div>
+
+<!-- Filters -->
+<div class="card p-3 card-table mb-4">
+  <form method="GET" action="{{ url_for('admissions.list_admissions') }}" class="row g-2">
+    <div class="col-md-9">
+      <select name="status" class="form-select">
+        <option value="">All Admission Statuses</option>
+        <option value="Active" {% if selected_status == 'Active' %}selected{% endif %}>Active Inpatients</option>
+        <option value="Discharged" {% if selected_status == 'Discharged' %}selected{% endif %}>Discharged Patients</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <button type="submit" class="btn btn-teal w-100"><i class="fa-solid fa-filter me-1"></i> Filter</button>
+    </div>
+  </form>
+</div>
+
+<!-- Admissions Table -->
+<div class="card card-table">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Patient Name</th>
+          <th>Assigned Bed & Ward</th>
+          <th>Attending Doctor</th>
+          <th>Admission Date</th>
+          <th>Discharge Date</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for adm in admissions %}
+        <tr>
+          <td><code>ADM-{{ "%04d"|format(adm.id) }}</code></td>
+          <td class="fw-semibold">
+            <div>{{ adm.patient_name }}</div>
+            <small class="text-muted"><i class="fa-solid fa-phone me-1"></i> {{ adm.patient_phone }}</small>
+          </td>
+          <td>
+            <span class="badge bg-primary px-2 py-1"><i class="fa-solid fa-bed me-1"></i> {{ adm.room_number }}-{{ adm.bed_number }}</span>
+            <span class="badge bg-light text-dark border ms-1">{{ adm.room_type }} (${{ adm.daily_rate }}/day)</span>
+          </td>
+          <td>{{ adm.doctor_name }}</td>
+          <td><small>{{ adm.admission_date }}</small></td>
+          <td><small>{{ adm.discharge_date or 'Currently Admitted' }}</small></td>
+          <td>{{ adm.status | status_badge | safe }}</td>
+          <td class="text-end">
+            {% if adm.status == 'Active' %}
+            <form method="POST" action="{{ url_for('admissions.discharge', admission_id=adm.id) }}" class="d-inline">
+              <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Confirm discharge for {{ adm.patient_name }}? Assigned bed {{ adm.room_number }}-{{ adm.bed_number }} will be set back to Available."><i class="fa-solid fa-door-open me-1"></i> Discharge</button>
+            </form>
+            {% else %}
+            <span class="badge bg-light text-secondary">Discharged</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-center py-4 text-muted">No inpatient admissions recorded matching filters.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

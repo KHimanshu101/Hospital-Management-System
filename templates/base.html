@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CarePoint HMS{% endblock %}</title>
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome Icons CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <!-- Custom Theme CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  {% if current_username %}
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand">
+      <i class="fa-solid fa-hospital-user text-turquoise"></i>
+      <span>CarePoint HMS</span>
+    </div>
+    <nav class="nav flex-column mt-3">
+      <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}" href="{{ url_for('dashboard.index') }}">
+        <i class="fa-solid fa-chart-line w-20"></i> Dashboard
+      </a>
+      <a class="nav-link {% if 'patients' in request.endpoint %}active{% endif %}" href="{{ url_for('patients.list_patients') }}">
+        <i class="fa-solid fa-user-injured w-20"></i> Patients
+      </a>
+      <a class="nav-link {% if 'doctors' in request.endpoint %}active{% endif %}" href="{{ url_for('doctors.list_doctors') }}">
+        <i class="fa-solid fa-user-doctor w-20"></i> Doctors
+      </a>
+      <a class="nav-link {% if 'departments' in request.endpoint %}active{% endif %}" href="{{ url_for('departments.list_departments') }}">
+        <i class="fa-solid fa-building-user w-20"></i> Departments
+      </a>
+      <a class="nav-link {% if 'appointments' in request.endpoint %}active{% endif %}" href="{{ url_for('appointments.list_appointments') }}">
+        <i class="fa-solid fa-calendar-check w-20"></i> Appointments
+      </a>
+      <a class="nav-link {% if 'admissions' in request.endpoint %}active{% endif %}" href="{{ url_for('admissions.list_admissions') }}">
+        <i class="fa-solid fa-bed-pulse w-20"></i> Admissions
+      </a>
+      <a class="nav-link {% if 'beds' in request.endpoint %}active{% endif %}" href="{{ url_for('beds.list_beds') }}">
+        <i class="fa-solid fa-procedures w-20"></i> Room & Bed Matrix
+      </a>
+      <a class="nav-link {% if 'billing' in request.endpoint %}active{% endif %}" href="{{ url_for('billing.list_bills') }}">
+        <i class="fa-solid fa-file-invoice-dollar w-20"></i> Invoices & Billing
+      </a>
+      <a class="nav-link {% if 'pharmacy' in request.endpoint %}active{% endif %}" href="{{ url_for('pharmacy.list_medicines') }}">
+        <i class="fa-solid fa-pills w-20"></i> Pharmacy Inventory
+      </a>
+      <a class="nav-link {% if 'reports' in request.endpoint %}active{% endif %}" href="{{ url_for('reports.index') }}">
+        <i class="fa-solid fa-chart-pie w-20"></i> Management Reports
+      </a>
+      <hr class="mx-3 my-2 text-white-50">
+      <a class="nav-link {% if 'sql_lab' in request.endpoint %}active{% endif %}" href="{{ url_for('sql_lab.index') }}">
+        <i class="fa-solid fa-terminal w-20"></i> SQL Playground
+      </a>
+      <a class="nav-link {% if 'er_diagram' in request.endpoint %}active{% endif %}" href="{{ url_for('er_viva.er_diagram') }}">
+        <i class="fa-solid fa-diagram-project w-20"></i> ER Diagram
+      </a>
+      <a class="nav-link {% if 'viva' in request.endpoint %}active{% endif %}" href="{{ url_for('er_viva.viva_guide') }}">
+        <i class="fa-solid fa-graduation-cap w-20"></i> Viva Guide (25 QA)
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-navbar">
+      <div class="d-flex align-items-center gap-3">
+        <h5 class="m-0 text-secondary fw-semibold">{% block page_title %}CarePoint Portal{% endblock %}</h5>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary dropdown-toggle btn-sm rounded-pill px-3" type="button" data-bs-toggle="dropdown">
+            <i class="fa-solid fa-circle-user me-1"></i> {{ current_user_fullname }} ({{ current_user_role }})
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+            <li><span class="dropdown-item-text text-muted small">Logged in as @{{ current_username }}</span></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{{ url_for('auth.change_password') }}"><i class="fa-solid fa-key me-2 text-teal"></i> Change Password</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="content-area">
+      <!-- Flash Alert Notifications -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% else %}
+    <!-- Unauthenticated View -->
+    <main>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show shadow" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block login_content %}{% endblock %}
+    </main>
+  {% endif %}
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Dispense Prescription - CarePoint HMS{% endblock %}
+{% block page_title %}Pharmacy Prescription Dispensing & Stock Reduction{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-9">
+    <div class="card card-table p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-teal m-0">Dispense Medicine Prescription</h5>
+        <a href="{{ url_for('pharmacy.list_medicines') }}" class="btn btn-sm btn-outline-secondary">&larr; Back to Inventory</a>
+      </div>
+
+      <div class="alert alert-info py-2 small mb-4">
+        <i class="fa-solid fa-circle-info me-1"></i> <strong>Transactional Dispensing:</strong> Submitting this form deducts stock quantities atomically and appends line items to the patient's active bill.
+      </div>
+
+      <form method="POST" action="">
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="patient_id" class="form-label fw-semibold">Patient *</label>
+            <select class="form-select" id="patient_id" name="patient_id" required>
+              <option value="">Select Patient...</option>
+              {% for p in patients %}
+              <option value="{{ p.id }}">{{ p.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="doctor_id" class="form-label fw-semibold">Prescribing Doctor *</label>
+            <select class="form-select" id="doctor_id" name="doctor_id" required>
+              <option value="">Select Doctor...</option>
+              {% for doc in doctors %}
+              <option value="{{ doc.id }}">{{ doc.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Prescribed Medicines *</label>
+          <div id="medicineRows">
+            <div class="row g-2 mb-2 medicine-row">
+              <div class="col-md-5">
+                <select class="form-select" name="medicine_id[]" required>
+                  <option value="">Choose Medicine...</option>
+                  {% for med in medicines %}
+                  <option value="{{ med.id }}">{% if med.quantity <= 0 %}[OUT OF STOCK] {% endif %}{{ med.name }} (Batch: {{ med.batch_number }}, Available: {{ med.quantity }}, ${{ med.unit_price }}/unit)</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-md-3">
+                <input type="number" class="form-control" name="quantity[]" placeholder="Qty" min="1" required>
+              </div>
+              <div class="col-md-4">
+                <input type="text" class="form-control" name="dosage[]" placeholder="e.g. 1 tablet every 8 hrs">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="notes" class="form-label fw-semibold">Prescription Notes / Instructions</label>
+          <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Special dosage instructions or precautions..."></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{{ url_for('pharmacy.list_medicines') }}" class="btn btn-light border">Cancel</a>
+          <button type="submit" class="btn btn-teal px-4 fw-semibold"><i class="fa-solid fa-prescription-bottle-medical me-1"></i> Dispense & Charge Patient</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

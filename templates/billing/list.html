@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Invoices & Billing Ledger - CarePoint HMS{% endblock %}
+{% block page_title %}Patient Billing & Invoices Ledger{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold text-teal m-0">Patient Billing & Invoices</h4>
+    <p class="text-muted small m-0">Itemized charges, total balance due, and payment tracking.</p>
+  </div>
+  <a href="{{ url_for('billing.new_bill') }}" class="btn btn-teal shadow-sm"><i class="fa-solid fa-file-circle-plus me-1"></i> Create New Invoice</a>
+</div>
+
+<!-- Filters -->
+<div class="card p-3 card-table mb-4">
+  <form method="GET" action="{{ url_for('billing.list_bills') }}" class="row g-2">
+    <div class="col-md-7">
+      <input type="text" name="search" class="form-control table-search-input" data-table-id="billingTable" placeholder="Search invoice by patient name..." value="{{ search }}">
+    </div>
+    <div class="col-md-3">
+      <select name="status" class="form-select">
+        <option value="">All Payment Statuses</option>
+        <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
+        <option value="Partial" {% if selected_status == 'Partial' %}selected{% endif %}>Partial</option>
+        <option value="Paid" {% if selected_status == 'Paid' %}selected{% endif %}>Paid</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-teal w-100"><i class="fa-solid fa-filter me-1"></i> Filter</button>
+    </div>
+  </form>
+</div>
+
+<!-- Bills Table -->
+<div class="card card-table">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0" id="billingTable">
+      <thead>
+        <tr>
+          <th>Invoice #</th>
+          <th>Date</th>
+          <th>Patient Name</th>
+          <th>Total Billed</th>
+          <th>Paid Amount</th>
+          <th>Balance Due</th>
+          <th>Payment Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bills %}
+        <tr>
+          <td><code>INV-{{ "%04d"|format(b.id) }}</code></td>
+          <td><small>{{ b.bill_date }}</small></td>
+          <td class="fw-semibold">{{ b.patient_name }}</td>
+          <td class="fw-semibold text-dark">{{ b.total_amount | currency }}</td>
+          <td class="text-success">{{ b.paid_amount | currency }}</td>
+          <td class="fw-bold {% if b.balance_due > 0 %}text-danger{% else %}text-muted{% endif %}">{{ b.balance_due | currency }}</td>
+          <td>{{ b.payment_status | status_badge | safe }}</td>
+          <td class="text-end">
+            <a href="{{ url_for('billing.view_bill', bill_id=b.id) }}" class="btn btn-sm btn-outline-teal"><i class="fa-solid fa-receipt me-1"></i> View / Pay</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-center py-4 text-muted">No invoices found matching criteria.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

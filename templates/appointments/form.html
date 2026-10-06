@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Book Appointment - CarePoint HMS{% endblock %}
+{% block page_title %}Schedule Doctor Appointment{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card card-table p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-teal m-0">Schedule New Doctor Consultation</h5>
+        <a href="{{ url_for('appointments.list_appointments') }}" class="btn btn-sm btn-outline-secondary">&larr; Back to Schedule</a>
+      </div>
+
+      <div class="alert alert-info py-2 small mb-4">
+        <i class="fa-solid fa-circle-info me-1"></i> <strong>Schedule Integrity System:</strong> CarePoint automatically validates doctor time slot availability inside a database transaction to prevent double-booking collisions.
+      </div>
+
+      <form method="POST" action="">
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="patient_id" class="form-label fw-semibold">Select Patient *</label>
+            <select class="form-select" id="patient_id" name="patient_id" required>
+              <option value="">Choose Patient...</option>
+              {% for p in patients %}
+              <option value="{{ p.id }}" {% if form_data and form_data.patient_id == p.id|string %}selected{% endif %}>{{ p.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="doctor_id" class="form-label fw-semibold">Select Attending Doctor *</label>
+            <select class="form-select" id="doctor_id" name="doctor_id" required>
+              <option value="">Choose Doctor...</option>
+              {% for doc in doctors %}
+              <option value="{{ doc.id }}" data-dept="{{ doc.department_id }}" {% if form_data and form_data.doctor_id == doc.id|string %}selected{% endif %}>{{ doc.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-4">
+            <label for="department_id" class="form-label fw-semibold">Department *</label>
+            <select class="form-select" id="department_id" name="department_id" required>
+              <option value="">Select Department...</option>
+              {% for dept in departments %}
+              <option value="{{ dept.id }}" {% if form_data and form_data.department_id == dept.id|string %}selected{% endif %}>{{ dept.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="appointment_date" class="form-label fw-semibold">Date *</label>
+            <input type="date" class="form-control" id="appointment_date" name="appointment_date" value="{{ form_data.appointment_date if form_data else '' }}" required>
+          </div>
+          <div class="col-md-4">
+            <label for="appointment_time" class="form-label fw-semibold">Time Slot *</label>
+            <input type="time" class="form-control" id="appointment_time" name="appointment_time" value="{{ form_data.appointment_time if form_data else '09:00' }}" required>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="reason" class="form-label fw-semibold">Reason for Visit / Symptoms</label>
+          <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="Describe symptoms or purpose of consultation...">{{ form_data.reason if form_data else '' }}</textarea>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{{ url_for('appointments.list_appointments') }}" class="btn btn-light border">Cancel</a>
+          <button type="submit" class="btn btn-teal px-4 fw-semibold"><i class="fa-solid fa-calendar-check me-1"></i> Confirm Booking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

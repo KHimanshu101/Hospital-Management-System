@@ -1,0 +1,16 @@
+# Python / Virtualenv
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.sqlite
+
+# Environment variables
+.env
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo

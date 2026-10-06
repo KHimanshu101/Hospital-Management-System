@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Patients Directory - CarePoint HMS{% endblock %}
+{% block page_title %}Patient Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold text-teal m-0">Patient Directory</h4>
+    <p class="text-muted small m-0">Manage registered patient demographics and medical history links.</p>
+  </div>
+  <a href="{{ url_for('patients.add_patient') }}" class="btn btn-teal shadow-sm"><i class="fa-solid fa-user-plus me-1"></i> Register New Patient</a>
+</div>
+
+<!-- Search Bar -->
+<div class="card p-3 card-table mb-4">
+  <form method="GET" action="{{ url_for('patients.list_patients') }}" class="row g-2">
+    <div class="col-md-10">
+      <div class="input-group">
+        <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="text" name="search" class="form-control table-search-input" data-table-id="patientsTable" placeholder="Search patient by name, phone number, or email..." value="{{ search }}">
+      </div>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-teal w-100"><i class="fa-solid fa-filter me-1"></i> Search</button>
+    </div>
+  </form>
+</div>
+
+<!-- Patient Table -->
+<div class="card card-table">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0" id="patientsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Full Name</th>
+          <th>DOB & Gender</th>
+          <th>Contact Info</th>
+          <th>Emergency Contact</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in patients %}
+        <tr>
+          <td><code>PAT-{{ "%04d"|format(p.id) }}</code></td>
+          <td class="fw-semibold">{{ p.first_name }} {{ p.last_name }}</td>
+          <td>{{ p.dob }} <span class="badge bg-light text-dark border ms-1">{{ p.gender }}</span></td>
+          <td>
+            <div><i class="fa-solid fa-phone text-muted me-1 small"></i> {{ p.phone }}</div>
+            {% if p.email %}<small class="text-muted"><i class="fa-solid fa-envelope me-1"></i> {{ p.email }}</small>{% endif %}
+          </td>
+          <td><small class="text-secondary">{{ p.emergency_contact or 'N/A' }}</small></td>
+          <td class="text-end">
+            <a href="{{ url_for('patients.edit_patient', patient_id=p.id) }}" class="btn btn-sm btn-outline-primary me-1"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+            <form method="POST" action="{{ url_for('patients.delete_patient', patient_id=p.id) }}" class="d-inline">
+              <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Are you sure you want to delete patient record '{{ p.first_name }} {{ p.last_name }}'?"><i class="fa-solid fa-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center py-4 text-muted">No patients found. Click 'Register New Patient' to add records.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

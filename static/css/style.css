@@ -1,0 +1,198 @@
+/* CarePoint Hospital Management System - Custom CSS Theme */
+:root {
+  --teal-primary: #0D4F59;
+  --teal-dark: #08333A;
+  --teal-light: #166B77;
+  --turquoise: #00A896;
+  --turquoise-light: #028090;
+  --bg-main: #F4F7F6;
+  --card-shadow: 0 4px 12px rgba(13, 79, 89, 0.08);
+  --border-radius: 8px;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-main);
+  color: #333333;
+  margin: 0;
+  padding: 0;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, var(--teal-primary) 0%, var(--teal-dark) 100%);
+  min-height: 100vh;
+  color: #FFFFFF;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar .brand {
+  padding: 1.5rem 1.25rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.82);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease-in-out;
+  border-left: 4px solid transparent;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-left-color: var(--turquoise);
+}
+
+/* Main Content Layout */
+.main-wrapper {
+  margin-left: 250px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-navbar {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  padding: 0.85rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content-area {
+  padding: 2rem;
+  flex: 1;
+}
+
+/* Cards & Metrics Grid */
+.stat-card {
+  background: #FFFFFF;
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  border-left: 5px solid var(--teal-primary);
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(13, 79, 89, 0.15);
+}
+
+.stat-card .stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(0, 168, 150, 0.12);
+  color: var(--teal-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--teal-primary);
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #64748B;
+  font-weight: 500;
+}
+
+/* Tables */
+.card-table {
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  background: #FFFFFF;
+  border: none;
+  overflow: hidden;
+}
+
+.table thead {
+  background-color: var(--teal-primary);
+  color: #FFFFFF;
+}
+
+.table th {
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+}
+
+.table td {
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+/* Custom Buttons */
+.btn-teal {
+  background-color: var(--teal-primary);
+  color: #FFFFFF;
+  border: none;
+}
+
+.btn-teal:hover {
+  background-color: var(--teal-dark);
+  color: #FFFFFF;
+}
+
+.btn-turquoise {
+  background-color: var(--turquoise);
+  color: #FFFFFF;
+  border: none;
+}
+
+.btn-turquoise:hover {
+  background-color: var(--turquoise-light);
+  color: #FFFFFF;
+}
+
+/* Login Page Styling */
+.login-bg {
+  background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal-primary) 50%, var(--turquoise-light) 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  border: none;
+}
+
+/* SQL Lab Results */
+.sql-editor {
+  font-family: 'Fira Code', 'Courier New', monospace;
+  background-color: #1E293B;
+  color: #F8FAFC;
+  border-radius: 6px;
+}

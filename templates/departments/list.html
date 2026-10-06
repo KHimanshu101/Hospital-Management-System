@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Departments - CarePoint HMS{% endblock %}
+{% block page_title %}Hospital Department Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold text-teal m-0">Hospital Departments</h4>
+    <p class="text-muted small m-0">Organize medical units, staff assignments, and services.</p>
+  </div>
+  <a href="{{ url_for('departments.add_department') }}" class="btn btn-teal shadow-sm"><i class="fa-solid fa-plus me-1"></i> New Department</a>
+</div>
+
+<div class="card card-table">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Department Name</th>
+          <th>Description</th>
+          <th>Assigned Doctors</th>
+          <th>Created Date</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in departments %}
+        <tr>
+          <td><span class="badge bg-teal text-white px-2 py-1">{{ d.code }}</span></td>
+          <td class="fw-semibold">{{ d.name }}</td>
+          <td><small class="text-muted">{{ d.description or 'No description provided.' }}</small></td>
+          <td><span class="badge bg-info text-dark">{{ d.total_doctors }} Doctors</span></td>
+          <td><small class="text-muted">{{ d.created_at }}</small></td>
+          <td class="text-end">
+            <a href="{{ url_for('departments.edit_department', dept_id=d.id) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center py-4 text-muted">No departments configured yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

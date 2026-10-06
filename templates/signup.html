@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up - CarePoint HMS{% endblock %}
+
+{% block login_content %}
+<div class="login-bg">
+  <div class="card login-card p-4 bg-white shadow-lg" style="max-width: 480px;">
+    <div class="text-center mb-4">
+      <div class="display-6 text-primary fw-bold text-teal">
+        <i class="fa-solid fa-user-plus me-2 text-turquoise"></i>CarePoint
+      </div>
+      <p class="text-muted small m-0">Create Hospital Staff Account</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.signup') }}" id="signupForm">
+      <div class="mb-3">
+        <label for="full_name" class="form-label fw-semibold">Full Name *</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light"><i class="fa-solid fa-id-card text-secondary"></i></span>
+          <input type="text" class="form-control" id="full_name" name="full_name" placeholder="e.g. Dr. Jane Smith" value="{{ form.full_name if form else '' }}" required autofocus>
+        </div>
+      </div>
+
+      <div class="row g-2 mb-3">
+        <div class="col-6">
+          <label for="username" class="form-label fw-semibold">Username *</label>
+          <input type="text" class="form-control" id="username" name="username" placeholder="jsmith" value="{{ form.username if form else '' }}" required>
+        </div>
+        <div class="col-6">
+          <label for="role" class="form-label fw-semibold">Hospital Role *</label>
+          <select class="form-select" id="role" name="role" required>
+            <option value="Receptionist" {% if form and form.role == 'Receptionist' %}selected{% endif %}>Receptionist</option>
+            <option value="Doctor" {% if form and form.role == 'Doctor' %}selected{% endif %}>Doctor</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label fw-semibold">Email Address *</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light"><i class="fa-solid fa-envelope text-secondary"></i></span>
+          <input type="email" class="form-control" id="email" name="email" placeholder="jsmith@carepoint.org" value="{{ form.email if form else '' }}" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label fw-semibold">Password *</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light"><i class="fa-solid fa-lock text-secondary"></i></span>
+          <input type="password" class="form-control password-input" id="password" name="password" placeholder="Min 6 characters" required>
+          <button class="btn btn-outline-secondary toggle-password-btn" type="button" data-target="password">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div class="progress mt-2" style="height: 5px;">
+          <div class="progress-bar password-meter" role="progressbar" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="confirm_password" class="form-label fw-semibold">Confirm Password *</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light"><i class="fa-solid fa-check-double text-secondary"></i></span>
+          <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required>
+          <button class="btn btn-outline-secondary toggle-password-btn" type="button" data-target="confirm_password">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-teal w-100 py-2 fw-semibold shadow-sm mb-3">
+        <i class="fa-solid fa-user-check me-2"></i> Register Account
+      </button>
+
+      <div class="text-center">
+        <span class="small text-muted">Already have an account? </span>
+        <a href="{{ url_for('auth.login') }}" class="small fw-bold text-teal text-decoration-none">Sign In Here</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

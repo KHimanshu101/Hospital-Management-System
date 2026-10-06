@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Management Reports - CarePoint HMS{% endblock %}
+{% block page_title %}Hospital Analytical & DBMS Reports{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="fw-bold text-teal m-0">Hospital Management & Analytical Reports</h4>
+    <p class="text-muted small m-0">Aggregated database reports demonstrating GROUP BY, SUM, COUNT, and multi-table JOIN metrics.</p>
+  </div>
+  <button onclick="window.print()" class="btn btn-outline-teal"><i class="fa-solid fa-print me-1"></i> Export / Print Reports</button>
+</div>
+
+<div class="row g-4">
+  <!-- 1. Doctor Workload -->
+  <div class="col-lg-6">
+    <div class="card card-table p-3 h-100">
+      <h6 class="fw-bold text-teal mb-3"><i class="fa-solid fa-user-doctor me-2"></i> Doctor Workload & Consultations</h6>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle m-0">
+          <thead>
+            <tr>
+              <th>Doctor Name</th>
+              <th>Department</th>
+              <th>Appointments</th>
+              <th>Inpatient Admissions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for doc in doctor_workload %}
+            <tr>
+              <td class="fw-semibold">{{ doc.doctor_name }}</td>
+              <td><span class="badge bg-light text-dark border">{{ doc.department_name }}</span></td>
+              <td class="fw-bold text-teal">{{ doc.total_appointments }}</td>
+              <td class="fw-bold text-primary">{{ doc.total_admissions }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No workload data available.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Department Stats -->
+  <div class="col-lg-6">
+    <div class="card card-table p-3 h-100">
+      <h6 class="fw-bold text-teal mb-3"><i class="fa-solid fa-building-user me-2"></i> Department Patient Distribution</h6>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle m-0">
+          <thead>
+            <tr>
+              <th>Department</th>
+              <th>Doctors Assigned</th>
+              <th>Appointments Booked</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dept in department_stats %}
+            <tr>
+              <td class="fw-semibold">{{ dept.department_name }}</td>
+              <td>{{ dept.doctor_count }} doctors</td>
+              <td class="fw-bold text-teal">{{ dept.appointment_count }} appointments</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="text-center text-muted py-3">No department stats available.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Bed Utilization Matrix -->
+  <div class="col-lg-6">
+    <div class="card card-table p-3 h-100">
+      <h6 class="fw-bold text-teal mb-3"><i class="fa-solid fa-procedures me-2"></i> Ward Bed Occupancy Breakdown</h6>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle m-0">
+          <thead>
+            <tr>
+              <th>Ward Type</th>
+              <th>Total Beds</th>
+              <th>Available</th>
+              <th>Occupied</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in bed_occupancy %}
+            <tr>
+              <td class="fw-semibold">{{ b.room_type }}</td>
+              <td>{{ b.total_beds }} beds</td>
+              <td><span class="badge bg-success">{{ b.available }} Available</span></td>
+              <td><span class="badge bg-danger">{{ b.occupied }} Occupied</span></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No bed data available.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Low Stock Inventory -->
+  <div class="col-lg-6">
+    <div class="card card-table p-3 h-100">
+      <h6 class="fw-bold text-danger mb-3"><i class="fa-solid fa-triangle-exclamation me-2"></i> Pharmacy Low-Stock Replenishment Alert</h6>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle m-0">
+          <thead>
+            <tr>
+              <th>Medicine Name</th>
+              <th>Batch</th>
+              <th>Current Stock</th>
+              <th>Reorder Threshold</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in low_stock %}
+            <tr>
+              <td class="fw-semibold">{{ item.name }}</td>
+              <td><code>{{ item.batch_number }}</code></td>
+              <td class="fw-bold text-danger">{{ item.quantity }} units</td>
+              <td>{{ item.reorder_level }} units</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-success py-3"><i class="fa-solid fa-circle-check me-1"></i> All medicine stock levels are healthy.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Appointments & Schedule - CarePoint HMS{% endblock %}
+{% block page_title %}Appointment Scheduling Ledger{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold text-teal m-0">Appointment Schedule</h4>
+    <p class="text-muted small m-0">Manage doctor consultations, time slots, and status updates.</p>
+  </div>
+  <a href="{{ url_for('appointments.book_appointment') }}" class="btn btn-teal shadow-sm"><i class="fa-solid fa-calendar-plus me-1"></i> Book New Appointment</a>
+</div>
+
+<!-- Filters Card -->
+<div class="card p-3 card-table mb-4">
+  <form method="GET" action="{{ url_for('appointments.list_appointments') }}" class="row g-2">
+    <div class="col-md-3">
+      <label class="form-label small fw-semibold text-muted">Filter Date</label>
+      <input type="date" name="date" class="form-control" value="{{ selected_date }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label small fw-semibold text-muted">Doctor</label>
+      <select name="doctor_id" class="form-select">
+        <option value="">All Doctors</option>
+        {% for doc in doctors %}
+        <option value="{{ doc.id }}" {% if selected_doctor == doc.id %}selected{% endif %}>{{ doc.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label small fw-semibold text-muted">Status</label>
+      <select name="status" class="form-select">
+        <option value="">All Statuses</option>
+        <option value="Scheduled" {% if selected_status == 'Scheduled' %}selected{% endif %}>Scheduled</option>
+        <option value="Completed" {% if selected_status == 'Completed' %}selected{% endif %}>Completed</option>
+        <option value="Cancelled" {% if selected_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+        <option value="No-Show" {% if selected_status == 'No-Show' %}selected{% endif %}>No-Show</option>
+      </select>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+      <button type="submit" class="btn btn-teal w-100"><i class="fa-solid fa-filter me-1"></i> Apply Filters</button>
+    </div>
+  </form>
+</div>
+
+<!-- Appointments Table -->
+<div class="card card-table">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Appointment Slot</th>
+          <th>Patient Name</th>
+          <th>Doctor & Dept</th>
+          <th>Reason / Notes</th>
+          <th>Status</th>
+          <th class="text-end">Update Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr>
+          <td><code>APT-{{ "%04d"|format(appt.id) }}</code></td>
+          <td>
+            <div class="fw-semibold text-teal"><i class="fa-regular fa-calendar me-1"></i> {{ appt.appointment_date }}</div>
+            <small class="text-muted"><i class="fa-regular fa-clock me-1"></i> {{ appt.appointment_time }}</small>
+          </td>
+          <td>
+            <div class="fw-semibold">{{ appt.patient_name }}</div>
+            <small class="text-muted"><i class="fa-solid fa-phone me-1"></i> {{ appt.patient_phone }}</small>
+          </td>
+          <td>
+            <div>{{ appt.doctor_name }}</div>
+            <span class="badge bg-light text-dark border">{{ appt.department_name }}</span>
+          </td>
+          <td><small class="text-secondary">{{ appt.reason or 'General Consultation' }}</small></td>
+          <td>{{ appt.status | status_badge | safe }}</td>
+          <td class="text-end">
+            <form method="POST" action="{{ url_for('appointments.update_status', appointment_id=appt.id) }}" class="d-inline-flex gap-1">
+              <select name="status" class="form-select form-select-sm" style="width: 130px;" onchange="this.form.submit()">
+                <option value="Scheduled" {% if appt.status == 'Scheduled' %}selected{% endif %}>Scheduled</option>
+                <option value="Completed" {% if appt.status == 'Completed' %}selected{% endif %}>Completed</option>
+                <option value="Cancelled" {% if appt.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                <option value="No-Show" {% if appt.status == 'No-Show' %}selected{% endif %}>No-Show</option>
+              </select>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center py-4 text-muted">No appointments found matching criteria.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

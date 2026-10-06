@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Pharmacy Inventory - CarePoint HMS{% endblock %}
+{% block page_title %}Pharmacy Inventory & Reorder Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="fw-bold text-teal m-0">Pharmacy Stock Inventory</h4>
+    <p class="text-muted small m-0">Monitor batch numbers, expiry dates, stock quantities, and low-stock alerts.</p>
+  </div>
+  <div>
+    <a href="{{ url_for('pharmacy.dispense_prescription') }}" class="btn btn-outline-teal me-2"><i class="fa-solid fa-prescription me-1"></i> Dispense Prescription</a>
+    <a href="{{ url_for('pharmacy.add_medicine') }}" class="btn btn-teal shadow-sm"><i class="fa-solid fa-plus me-1"></i> Add Medicine Stock</a>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card p-3 card-table mb-4">
+  <form method="GET" action="{{ url_for('pharmacy.list_medicines') }}" class="row g-2">
+    <div class="col-md-8">
+      <input type="text" name="search" class="form-control table-search-input" data-table-id="pharmacyTable" placeholder="Search medicine by name or batch number..." value="{{ search }}">
+    </div>
+    <div class="col-md-2 d-flex align-items-center">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="low_stock" value="True" id="lowStockCheck" {% if low_stock %}checked{% endif %} onchange="this.form.submit()">
+        <label class="form-check-input-label small fw-semibold text-danger" for="lowStockCheck">Low Stock Only</label>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-teal w-100"><i class="fa-solid fa-filter me-1"></i> Search</button>
+    </div>
+  </form>
+</div>
+
+<!-- Medicine Inventory Table -->
+<div class="card card-table">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0" id="pharmacyTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Medicine Name</th>
+          <th>Batch Number</th>
+          <th>Stock Quantity</th>
+          <th>Reorder Threshold</th>
+          <th>Unit Price</th>
+          <th>Expiry Date</th>
+          <th>Status Alert</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in medicines %}
+        <tr>
+          <td><code>MED-{{ "%04d"|format(m.id) }}</code></td>
+          <td class="fw-semibold">{{ m.name }}</td>
+          <td><code>{{ m.batch_number }}</code></td>
+          <td><span class="fs-6 fw-bold {% if m.is_low_stock %}text-danger{% else %}text-dark{% endif %}">{{ m.quantity }} units</span></td>
+          <td><small class="text-muted">{{ m.reorder_level }} units</small></td>
+          <td class="fw-semibold text-teal">{{ m.unit_price | currency }}</td>
+          <td><small>{{ m.expiry_date }}</small></td>
+          <td>
+            {% if m.is_low_stock %}
+            <span class="badge bg-danger px-2 py-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Low Stock Alert</span>
+            {% else %}
+            <span class="badge bg-success px-2 py-1">In Stock</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-center py-4 text-muted">No medicines found matching criteria.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

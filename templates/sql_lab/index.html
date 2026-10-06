@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}SQL Playground - CarePoint HMS{% endblock %}
+{% block page_title %}Educational SQL Playground (Read-Only SELECT Lab){% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <h4 class="fw-bold text-teal m-0">SQL Playground & Concept Demonstrator</h4>
+  <p class="text-muted small m-0">Interactively test safe read-only SQL queries (JOINs, subqueries, GROUP BY, views) against the <code>carepoint_hms</code> MySQL database.</p>
+</div>
+
+<div class="row g-4">
+  <!-- Left Side: Query Editor & Presets -->
+  <div class="col-lg-5">
+    <div class="card card-table p-3 mb-3">
+      <h6 class="fw-bold text-teal mb-3"><i class="fa-solid fa-list-check me-2"></i> Preset Sample SQL Queries</h6>
+      <div class="list-group list-group-flush">
+        {% for sample in samples %}
+        <form method="POST" action="{{ url_for('sql_lab.index') }}" class="mb-1">
+          <input type="hidden" name="sample_id" value="{{ sample.id }}">
+          <button type="submit" class="list-group-item list-group-item-action border rounded p-2 text-start {% if selected_sample_id == sample.id %}active{% endif %}">
+            <div class="fw-semibold small">{{ sample.title }}</div>
+            <div class="text-muted extra-small" style="font-size: 0.78rem;">{{ sample.explanation }}</div>
+          </button>
+        </form>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Query Input & Execution Result -->
+  <div class="col-lg-7">
+    <!-- Query Editor Form -->
+    <div class="card card-table p-3 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="fw-bold text-teal m-0"><i class="fa-solid fa-terminal me-2"></i> Custom SELECT Query Editor</h6>
+        <span class="badge bg-success"><i class="fa-solid fa-shield-halved me-1"></i> Read-Only Protection Active</span>
+      </div>
+
+      <form method="POST" action="{{ url_for('sql_lab.index') }}">
+        <div class="mb-3">
+          <textarea name="sql_query" class="form-control sql-editor p-3" rows="5" placeholder="SELECT * FROM doctors INNER JOIN departments ON doctors.department_id = departments.id;" required>{{ user_query }}</textarea>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <small class="text-muted"><i class="fa-solid fa-circle-info me-1"></i> Permits only SELECT statements. Enforces 100 row limit.</small>
+          <button type="submit" class="btn btn-teal px-4 fw-semibold"><i class="fa-solid fa-play me-1"></i> Run Query</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Error Banner -->
+    {% if error_message %}
+    <div class="alert alert-danger shadow-sm border-danger" role="alert">
+      <h6 class="fw-bold m-0"><i class="fa-solid fa-triangle-exclamation me-2"></i> Execution Rejected / Query Error</h6>
+      <p class="m-0 mt-1 small">{{ error_message }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Execution Results Table -->
+    {% if query_result is not none and error_message is none %}
+    <div class="card card-table">
+      <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="m-0 fw-bold text-teal"><i class="fa-solid fa-table me-2"></i> Query Result Set ({{ query_result|length }} rows returned)</h6>
+        <span class="badge bg-light text-dark border"><i class="fa-solid fa-stopwatch me-1"></i> {{ execution_time_ms }} ms</span>
+      </div>
+      <div class="table-responsive" style="max-height: 400px;">
+        <table class="table table-sm table-striped table-hover align-middle m-0">
+          <thead class="sticky-top">
+            <tr>
+              {% for col in columns %}
+              <th>{{ col }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in query_result %}
+            <tr>
+              {% for col in columns %}
+              <td><code>{{ row[col] if row[col] is not none else 'NULL' }}</code></td>
+              {% endfor %}
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="{{ columns|length or 1 }}" class="text-center py-4 text-muted">Query executed successfully, but returned 0 matching rows.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

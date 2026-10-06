@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block title %}ER Diagram - CarePoint HMS{% endblock %}
+{% block page_title %}Entity-Relationship Diagram & Schema Architecture{% endblock %}
+
+{% block extra_css %}
+<!-- Mermaid.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <h4 class="fw-bold text-teal m-0">Entity-Relationship (ER) Diagram</h4>
+  <p class="text-muted small m-0">Visual representation of CarePoint HMS database entities, primary keys, foreign keys, and cardinalities (3NF Normalized Schema).</p>
+</div>
+
+<!-- Mermaid Diagram Container -->
+<div class="card card-table p-4 mb-4 text-center">
+  <h6 class="fw-bold text-teal mb-3 text-start"><i class="fa-solid fa-diagram-project me-2"></i> Relational Schema Map</h6>
+  <div class="mermaid overflow-auto">
+    erDiagram
+        USERS {
+            int id PK
+            string username UK
+            string password_hash
+            string full_name
+            string role
+        }
+        DEPARTMENTS {
+            int id PK
+            string name UK
+            string code UK
+            text description
+        }
+        DOCTORS {
+            int id PK
+            string first_name
+            string last_name
+            string email UK
+            string phone
+            string specialization
+            decimal consultation_fee
+            int department_id FK
+        }
+        PATIENTS {
+            int id PK
+            string first_name
+            string last_name
+            date dob
+            string gender
+            string phone
+            string email
+        }
+        ROOMS_BEDS {
+            int id PK
+            string room_number
+            string bed_number
+            string room_type
+            decimal daily_rate
+            string status
+        }
+        APPOINTMENTS {
+            int id PK
+            int patient_id FK
+            int doctor_id FK
+            int department_id FK
+            date appointment_date
+            time appointment_time
+            string status
+        }
+        ADMISSIONS {
+            int id PK
+            int patient_id FK
+            int bed_id FK
+            int doctor_id FK
+            datetime admission_date
+            datetime discharge_date
+            string status
+        }
+        BILLS {
+            int id PK
+            int patient_id FK
+            int admission_id FK
+            datetime bill_date
+            decimal total_amount
+            decimal paid_amount
+            string payment_status
+        }
+        BILL_ITEMS {
+            int id PK
+            int bill_id FK
+            string description
+            decimal amount
+            int quantity
+            string item_type
+        }
+        MEDICINES {
+            int id PK
+            string name
+            string batch_number UK
+            int quantity
+            date expiry_date
+            decimal unit_price
+            int reorder_level
+        }
+        PRESCRIPTIONS {
+            int id PK
+            int appointment_id FK
+            int patient_id FK
+            int doctor_id FK
+            datetime prescription_date
+        }
+        PRESCRIPTION_ITEMS {
+            int id PK
+            int prescription_id FK
+            int medicine_id FK
+            int quantity
+            string dosage
+            decimal unit_price
+            decimal total_price
+        }
+
+        DEPARTMENTS ||--o{ DOCTORS : "employs (1:N)"
+        DEPARTMENTS ||--o{ APPOINTMENTS : "categorizes (1:N)"
+        DOCTORS ||--o{ APPOINTMENTS : "attends (1:N)"
+        PATIENTS ||--o{ APPOINTMENTS : "books (1:N)"
+        PATIENTS ||--o{ ADMISSIONS : "undergoes (1:N)"
+        DOCTORS ||--o{ ADMISSIONS : "supervises (1:N)"
+        ROOMS_BEDS ||--o{ ADMISSIONS : "accommodates (1:N)"
+        PATIENTS ||--o{ BILLS : "billed_to (1:N)"
+        ADMISSIONS ||--o| BILLS : "generates (1:1)"
+        BILLS ||--o{ BILL_ITEMS : "contains (1:N)"
+        DOCTORS ||--o{ PRESCRIPTIONS : "prescribes (1:N)"
+        PATIENTS ||--o{ PRESCRIPTIONS : "receives (1:N)"
+        APPOINTMENTS ||--o| PRESCRIPTIONS : "results_in (1:1)"
+        PRESCRIPTIONS ||--o{ PRESCRIPTION_ITEMS : "includes (1:N)"
+        MEDICINES ||--o{ PRESCRIPTION_ITEMS : "dispensed_in (1:N)"
+  </div>
+</div>
+
+<!-- Data Dictionary Reference -->
+<div class="card card-table p-4">
+  <h6 class="fw-bold text-teal mb-3"><i class="fa-solid fa-book-bookmark me-2"></i> Database Schema Dictionary & Relationships</h6>
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="border rounded p-3 bg-light">
+        <strong class="text-teal"><i class="fa-solid fa-key me-1"></i> Core Primary & Foreign Keys:</strong>
+        <ul class="small text-muted mb-0 mt-2">
+          <li><code>doctors.department_id</code> &rarr; <code>departments.id</code> (RESTRICT)</li>
+          <li><code>appointments.patient_id</code> &rarr; <code>patients.id</code> (RESTRICT)</li>
+          <li><code>appointments.doctor_id</code> &rarr; <code>doctors.id</code> (RESTRICT)</li>
+          <li><code>admissions.bed_id</code> &rarr; <code>rooms_beds.id</code> (RESTRICT)</li>
+          <li><code>bill_items.bill_id</code> &rarr; <code>bills.id</code> (CASCADE)</li>
+          <li><code>prescription_items.prescription_id</code> &rarr; <code>prescriptions.id</code> (CASCADE)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="border rounded p-3 bg-light">
+        <strong class="text-teal"><i class="fa-solid fa-lock me-1"></i> Key Constraints & Multi-Column Rules:</strong>
+        <ul class="small text-muted mb-0 mt-2">
+          <li><code>rooms_beds</code>: UNIQUE constraint on <code>(room_number, bed_number)</code></li>
+          <li><code>appointments</code>: UNIQUE constraint on <code>(doctor_id, appointment_date, appointment_time)</code></li>
+          <li><code>medicines</code>: CHECK constraint enforcing <code>quantity >= 0</code></li>
+          <li><code>doctors</code>: CHECK constraint enforcing <code>consultation_fee >= 0</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

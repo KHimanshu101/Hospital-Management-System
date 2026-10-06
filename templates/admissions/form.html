@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Inpatient Admission - CarePoint HMS{% endblock %}
+{% block page_title %}New Inpatient Bed Allocation{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card card-table p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-teal m-0">Inpatient Admission Registration</h5>
+        <a href="{{ url_for('admissions.list_admissions') }}" class="btn btn-sm btn-outline-secondary">&larr; Back to Admissions</a>
+      </div>
+
+      <div class="alert alert-info py-2 small mb-4">
+        <i class="fa-solid fa-circle-info me-1"></i> <strong>Transactional Safety:</strong> Selecting an available bed locks the row and updates bed status to <code>Occupied</code> in a single transaction.
+      </div>
+
+      <form method="POST" action="">
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="patient_id" class="form-label fw-semibold">Select Patient *</label>
+            <select class="form-select" id="patient_id" name="patient_id" required>
+              <option value="">Choose Patient...</option>
+              {% for p in patients %}
+              <option value="{{ p.id }}">{{ p.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="doctor_id" class="form-label fw-semibold">Attending Doctor *</label>
+            <select class="form-select" id="doctor_id" name="doctor_id" required>
+              <option value="">Choose Attending Doctor...</option>
+              {% for doc in doctors %}
+              <option value="{{ doc.id }}">{{ doc.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="bed_id" class="form-label fw-semibold">Select Available Bed *</label>
+          <select class="form-select" id="bed_id" name="bed_id" required>
+            <option value="">Choose Available Bed...</option>
+            {% for bed in beds %}
+            <option value="{{ bed.id }}">Room {{ bed.room_number }} - Bed {{ bed.bed_number }} ({{ bed.room_type }} Ward - ${{ bed.daily_rate }}/day)</option>
+            {% else %}
+            <option value="" disabled>No beds currently available in inventory!</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label for="reason" class="form-label fw-semibold">Admission Reason & Diagnosis</label>
+          <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="Primary medical reason for inpatient admission..."></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{{ url_for('admissions.list_admissions') }}" class="btn btn-light border">Cancel</a>
+          <button type="submit" class="btn btn-teal px-4 fw-semibold" {% if not beds %}disabled{% endif %}><i class="fa-solid fa-bed me-1"></i> Complete Admission</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
